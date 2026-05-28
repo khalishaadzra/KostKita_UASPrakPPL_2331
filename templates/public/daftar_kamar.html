@@ -1,0 +1,60 @@
+{% extends 'base_public.html' %}
+{% block title %}Daftar Kamar - KostKita{% endblock %}
+{% block extra_css %}
+<style>
+  :root { --dark:#1a1a1a; --cream:#f5f0eb; --accent:#c8a97e; --muted:#6b6b6b; }
+  .page-wrap { max-width:1100px; margin:0 auto; padding:2.5rem 1.5rem; }
+  .room-card { border:1px solid #f0f0f0; border-radius:20px; overflow:hidden; transition:0.25s; background:#fff; }
+  .room-card:hover { transform:translateY(-5px); box-shadow:0 8px 24px rgba(0,0,0,0.06); }
+  .room-image { height:190px; background:var(--cream); display:flex; align-items:center; justify-content:center; overflow:hidden; }
+  .room-image img { width:100%; height:100%; object-fit:cover; }
+  .badge-tersedia { background:#eef7ee; color:#2e7d32; padding:4px 12px; border-radius:50px; font-size:0.75rem; font-weight:600; }
+  .badge-terisi { background:#fce4ec; color:#c62828; padding:4px 12px; border-radius:50px; font-size:0.75rem; font-weight:600; }
+  .btn-main { background:var(--dark); color:#fff; border-radius:12px; padding:0.7rem 1.2rem; text-decoration:none; display:block; text-align:center; font-size:0.88rem; font-weight:500; transition:0.2s; }
+  .btn-main:hover { background:#333; color:#fff; }
+</style>
+{% endblock %}
+{% block content %}
+<div class="page-wrap">
+  <!-- Back -->
+  <a href="{% url 'landing' %}" class="back-btn mb-4 d-inline-flex">
+    <i class="bi bi-arrow-left"></i> Kembali ke Beranda
+  </a>
+
+  <div class="d-flex justify-content-between align-items-end mb-4">
+    <div>
+      <p style="font-size:0.78rem;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin:0;">Semua Kamar</p>
+      <h2 style="font-weight:800;font-size:2rem;margin:0.2rem 0 0;">Pilih Kamarmu</h2>
+    </div>
+    <small style="color:var(--muted);">{{ kamar.count }} kamar</small>
+  </div>
+
+  <div class="row g-4">
+    {% for k in kamar %}
+    <div class="col-md-4 col-lg-3">
+      <div class="room-card">
+        <div class="room-image">
+          {% if k.foto %}<img src="{{ k.foto.url }}">
+          {% else %}<span style="font-size:2.5rem;">🛏️</span>{% endif %}
+        </div>
+        <div style="padding:1.2rem;">
+          <div class="d-flex justify-content-between align-items-center mb-1">
+            <h6 style="font-weight:700;margin:0;">Kamar {{ k.nomor }}</h6>
+            {% if k.status == 'tersedia' %}<span class="badge-tersedia">Tersedia</span>
+            {% else %}<span class="badge-terisi">Terisi</span>{% endif %}
+          </div>
+          <p style="color:var(--muted);font-size:0.8rem;margin:0.3rem 0 0.8rem;">Lantai {{ k.lantai }}</p>
+          <p style="font-weight:800;font-size:0.95rem;margin-bottom:1rem;">Rp 1.000.000<span style="font-weight:400;font-size:0.75rem;color:var(--muted);">/bulan</span></p>
+          <a href="{% url 'detail_kamar' k.pk %}" class="btn-main">Detail</a>
+        </div>
+      </div>
+    </div>
+    {% empty %}
+    <div class="col-12 text-center py-5">
+      <span style="font-size:3rem;">🛏️</span>
+      <p style="color:var(--muted);margin-top:1rem;">Belum ada kamar terdaftar.</p>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

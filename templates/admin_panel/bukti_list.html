@@ -1,0 +1,36 @@
+{% extends 'admin_panel/base_admin.html' %}
+{% block title %}Bukti Bayar{% endblock %}
+{% block page_title %}Verifikasi Bukti Bayar{% endblock %}
+{% block content %}
+<div class="table-card">
+  <table class="table mb-0">
+    <thead><tr><th>#</th><th>Penyewa</th><th>Kamar</th><th>Total</th><th>Durasi</th><th>Tgl Upload</th><th>Status</th><th>Aksi</th></tr></thead>
+    <tbody>
+      {% for b in bukti %}
+      <tr>
+        <td style="color:#aaa;">{{ b.pk }}</td>
+        <td><strong>{{ b.pengajuan.nama }}</strong></td>
+        <td>{{ b.pengajuan.kamar.nomor }}</td>
+        <td>Rp {{ b.pengajuan.total_harga|floatformat:0 }}</td>
+        <td>{{ b.pengajuan.durasi }} bln</td>
+        <td style="font-size:0.8rem;">{{ b.tanggal_upload|date:"d M Y H:i" }}</td>
+        <td>
+          {% if b.status == 'menunggu' %}<span class="b-menunggu">Menunggu</span>
+          {% elif b.status == 'verified' %}<span class="b-verified">Verified</span>
+          {% elif b.status == 'ditolak' %}<span class="b-ditolak">Ditolak</span>{% endif %}
+        </td>
+        <td>
+          <a href="{{ b.foto_bukti.url }}" target="_blank" class="btn-act btn-view me-1"><i class="bi bi-image"></i></a>
+          {% if b.status == 'menunggu' %}
+          <a href="{% url 'bukti_verifikasi' b.pk %}" class="btn-act btn-approve me-1" onclick="return confirm('Verifikasi?')">✅</a>
+          <a href="{% url 'bukti_tolak' b.pk %}" class="btn-act btn-tolak" onclick="return confirm('Tolak?')">❌</a>
+          {% endif %}
+        </td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="8" class="text-center py-4" style="color:#aaa;">Belum ada bukti bayar.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

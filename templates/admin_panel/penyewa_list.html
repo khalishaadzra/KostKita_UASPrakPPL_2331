@@ -1,0 +1,72 @@
+{% extends 'admin_panel/base_admin.html' %}
+{% block title %}Penyewa{% endblock %}
+{% block page_title %}Penyewa Aktif{% endblock %}
+{% block content %}
+
+<!-- Penyewa Aktif -->
+<div class="mb-4">
+  <h5 style="font-weight:800;margin:0;">Penyewa Aktif</h5>
+  <small style="color:#888;">{{ penyewa.count }} penyewa aktif saat ini</small>
+</div>
+<div class="table-card mb-5">
+  <table class="table mb-0">
+    <thead>
+      <tr><th>Nama</th><th>Kamar</th><th>No. HP</th><th>Durasi</th><th>Mulai</th><th>Selesai</th><th>Total</th><th>Aksi</th></tr>
+    </thead>
+    <tbody>
+      {% for p in penyewa %}
+      <tr>
+        <td>
+          <strong>{{ p.nama }}</strong><br>
+          <small style="color:#aaa;">{{ p.get_jenis_kelamin_display }}, {{ p.umur }} thn</small>
+        </td>
+        <td><strong>{{ p.kamar.nomor }}</strong><br><small style="color:#aaa;">Lantai {{ p.kamar.lantai }}</small></td>
+        <td>{{ p.no_hp }}</td>
+        <td>{{ p.durasi }} bulan</td>
+        <td style="font-size:0.85rem;">{{ p.tanggal_mulai|date:"d M Y"|default:"-" }}</td>
+        <td style="font-size:0.85rem;">{{ p.tanggal_selesai|date:"d M Y"|default:"-" }}</td>
+        <td><strong>Rp {{ p.total_harga|floatformat:0 }}</strong></td>
+        <td>
+          <a href="{% url 'pengajuan_selesai' p.pk %}" class="btn-act btn-tolak"
+             onclick="return confirm('Tandai sewa {{ p.nama }} selesai? Kamar akan kembali tersedia.')">
+            🏁 Selesai
+          </a>
+        </td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="8" class="text-center py-4" style="color:#aaa;">Belum ada penyewa aktif.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<!-- Riwayat -->
+<div class="mb-4">
+  <h5 style="font-weight:800;margin:0;">Riwayat Sewa</h5>
+  <small style="color:#888;">{{ riwayat.count }} riwayat sewa selesai</small>
+</div>
+<div class="table-card">
+  <table class="table mb-0">
+    <thead>
+      <tr><th>Nama</th><th>Kamar</th><th>Durasi</th><th>Mulai</th><th>Selesai</th><th>Total</th></tr>
+    </thead>
+    <tbody>
+      {% for p in riwayat %}
+      <tr>
+        <td>
+          <strong>{{ p.nama }}</strong><br>
+          <small style="color:#aaa;">{{ p.get_jenis_kelamin_display }}, {{ p.umur }} thn</small>
+        </td>
+        <td>{{ p.kamar.nomor }}</td>
+        <td>{{ p.durasi }} bulan</td>
+        <td style="font-size:0.85rem;">{{ p.tanggal_mulai|date:"d M Y"|default:"-" }}</td>
+        <td style="font-size:0.85rem;">{{ p.tanggal_selesai|date:"d M Y"|default:"-" }}</td>
+        <td>Rp {{ p.total_harga|floatformat:0 }}</td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="6" class="text-center py-4" style="color:#aaa;">Belum ada riwayat sewa.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

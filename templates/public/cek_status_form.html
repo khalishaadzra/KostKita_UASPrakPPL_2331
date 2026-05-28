@@ -1,0 +1,28 @@
+{% extends 'base_public.html' %}
+{% block title %}Cek Status - KostKita{% endblock %}
+{% block extra_css %}
+<style>
+  :root { --dark:#1a1a1a; --cream:#f5f0eb; --muted:#6b6b6b; }
+  .page-wrap { max-width:460px; margin:0 auto; padding:2.5rem 1.5rem; }
+  .form-control { border:1.5px solid #eee; border-radius:12px; padding:0.75rem; font-size:1rem; text-align:center; }
+  .form-control:focus { border-color:var(--dark); box-shadow:none; }
+  .btn-main { background:var(--dark); color:#fff; border:none; border-radius:14px; padding:0.85rem; font-weight:600; width:100%; font-size:0.95rem; cursor:pointer; }
+</style>
+{% endblock %}
+{% block content %}
+<div class="page-wrap" style="padding-top:5rem;">
+  <a href="{% url 'landing' %}" class="back-btn mb-4 d-inline-flex">
+    <i class="bi bi-arrow-left"></i> Kembali ke Beranda
+  </a>
+  <div style="background:#fff;border:1px solid #f0f0f0;border-radius:24px;padding:2.5rem;box-shadow:0 4px 20px rgba(0,0,0,0.05);text-align:center;">
+    <div style="font-size:2.5rem;margin-bottom:1rem;">🔍</div>
+    <h4 style="font-weight:800;margin-bottom:0.5rem;">Cek Status Pengajuan</h4>
+    <p style="color:var(--muted);font-size:0.88rem;margin-bottom:2rem;">Masukkan ID pengajuan yang kamu terima saat mengajukan sewa.</p>
+    <form method="post">
+      {% csrf_token %}
+      <input type="number" name="pengajuan_id" class="form-control mb-3" placeholder="Contoh: 12" required>
+      <button type="submit" class="btn-main">Cek Status</button>
+    </form>
+  </div>
+</div>
+{% endblock %}

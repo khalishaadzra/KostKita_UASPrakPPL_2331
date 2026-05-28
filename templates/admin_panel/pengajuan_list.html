@@ -1,0 +1,65 @@
+{% extends 'admin_panel/base_admin.html' %}
+{% block title %}Pengajuan{% endblock %}
+{% block page_title %}Manajemen Pengajuan{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <div>
+    <h5 style="font-weight:800;margin:0;">Daftar Pengajuan</h5>
+    <small style="color:#888;">{{ pengajuan.count }} total pengajuan</small>
+  </div>
+  <div class="d-flex gap-2">
+    <a href="?status=menunggu" class="btn btn-sm {% if status_filter == 'menunggu' %}btn-dark{% else %}btn-outline-secondary{% endif %}" style="border-radius:50px;font-size:0.8rem;">Menunggu</a>
+    <a href="?status=disetujui" class="btn btn-sm {% if status_filter == 'disetujui' %}btn-dark{% else %}btn-outline-secondary{% endif %}" style="border-radius:50px;font-size:0.8rem;">Disetujui</a>
+    <a href="?status=berhasil" class="btn btn-sm {% if status_filter == 'berhasil' %}btn-dark{% else %}btn-outline-secondary{% endif %}" style="border-radius:50px;font-size:0.8rem;">Berhasil</a>
+    <a href="?" class="btn btn-sm {% if not status_filter %}btn-dark{% else %}btn-outline-secondary{% endif %}" style="border-radius:50px;font-size:0.8rem;">Semua</a>
+  </div>
+</div>
+<div class="table-card">
+  <table class="table mb-0">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Nama</th>
+        <th>Kamar</th>
+        <th>Durasi</th>
+        <th>Total</th>
+        <th>Tgl Ajuan</th>
+        <th>Status</th>
+        <th>Aksi</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for p in pengajuan %}
+      <tr>
+        <td style="color:#aaa;">{{ p.pk }}</td>
+        <td><strong>{{ p.nama }}</strong><br><small style="color:#aaa;">{{ p.no_hp }}</small></td>
+        <td>{{ p.kamar.nomor }}</td>
+        <td>{{ p.durasi }} bln</td>
+        <td>Rp {{ p.total_harga|floatformat:0 }}</td>
+        <td style="font-size:0.8rem;">{{ p.tanggal_ajuan|date:"d M Y" }}</td>
+        <td>
+          {% if p.status == 'menunggu' %}<span class="b-menunggu">Menunggu</span>
+          {% elif p.status == 'disetujui' %}<span class="b-disetujui">Disetujui</span>
+          {% elif p.status == 'menunggu_verifikasi' %}<span class="b-aktif">Cek Bukti</span>
+          {% elif p.status == 'berhasil' %}<span class="b-verified">Berhasil</span>
+          {% elif p.status == 'selesai' %}<span class="b-menunggu">Selesai</span>
+          {% elif p.status == 'ditolak' %}<span class="b-ditolak">Ditolak</span>
+          {% endif %}
+        </td>
+        <td>
+          <a href="{% url 'pengajuan_detail' p.pk %}" class="btn-act btn-view me-1"><i class="bi bi-eye"></i></a>
+          {% if p.status == 'menunggu' %}
+          <a href="{% url 'pengajuan_setujui' p.pk %}" class="btn-act btn-approve me-1" onclick="return confirm('Setujui?')">✅</a>
+          <a href="{% url 'pengajuan_tolak' p.pk %}" class="btn-act btn-tolak" onclick="return confirm('Tolak?')">❌</a>
+          {% elif p.status == 'berhasil' %}
+          <a href="{% url 'pengajuan_selesai' p.pk %}" class="btn-act btn-tolak" onclick="return confirm('Tandai selesai?')">🏁</a>
+          {% endif %}
+        </td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="8" class="text-center py-4" style="color:#aaa;">Belum ada pengajuan.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

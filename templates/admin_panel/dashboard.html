@@ -1,0 +1,125 @@
+{% extends 'admin_panel/base_admin.html' %}
+{% block title %}Dashboard - KostKita{% endblock %}
+{% block page_title %}Dashboard{% endblock %}
+{% block content %}
+
+<!-- Stat Cards -->
+<div class="row g-3 mb-4">
+  <div class="col-md-3 col-6">
+    <div class="stat-card">
+      <div class="stat-icon" style="background:#f5f0eb;">🛏️</div>
+      <h3>{{ total_kamar }}</h3>
+      <small>Total Kamar</small>
+    </div>
+  </div>
+  <div class="col-md-3 col-6">
+    <div class="stat-card">
+      <div class="stat-icon" style="background:#e8f5e9;">✅</div>
+      <h3 style="color:#2e7d32;">{{ kamar_tersedia }}</h3>
+      <small>Kamar Tersedia</small>
+    </div>
+  </div>
+  <div class="col-md-3 col-6">
+    <div class="stat-card">
+      <div class="stat-icon" style="background:#fce4ec;">🏠</div>
+      <h3 style="color:#c62828;">{{ kamar_terisi }}</h3>
+      <small>Kamar Terisi</small>
+    </div>
+  </div>
+  <div class="col-md-3 col-6">
+    <div class="stat-card">
+      <div class="stat-icon" style="background:#e3f2fd;">👥</div>
+      <h3 style="color:#1565c0;">{{ penyewa_aktif }}</h3>
+      <small>Penyewa Aktif</small>
+    </div>
+  </div>
+</div>
+
+<div class="row g-3 mb-4">
+  <div class="col-md-4 col-6">
+    <div class="stat-card">
+      <div class="stat-icon" style="background:#fff3e0;">📋</div>
+      <h3 style="color:#e65100;">{{ pengajuan_baru }}</h3>
+      <small>Pengajuan Baru</small>
+    </div>
+  </div>
+  <div class="col-md-4 col-6">
+    <div class="stat-card">
+      <div class="stat-icon" style="background:#f3e5f5;">🔍</div>
+      <h3 style="color:#6a1b9a;">{{ menunggu_verifikasi }}</h3>
+      <small>Menunggu Verifikasi</small>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="stat-card">
+      <div class="stat-icon" style="background:#e8f5e9;">💰</div>
+      <h3 style="color:#2e7d32;font-size:1.4rem;">Rp {{ total_pemasukan|floatformat:0 }}</h3>
+      <small>Total Pemasukan Aktif</small>
+    </div>
+  </div>
+</div>
+
+{% if pengajuan_baru > 0 %}
+<div style="background:#fff3e0;border-radius:16px;padding:1rem 1.5rem;margin-bottom:1.5rem;font-size:0.88rem;color:#e65100;">
+  <i class="bi bi-bell me-2"></i>Ada <strong>{{ pengajuan_baru }} pengajuan baru</strong> menunggu review.
+  <a href="{% url 'pengajuan_list' %}?status=menunggu" style="color:#e65100;font-weight:700;margin-left:0.5rem;">Review Sekarang →</a>
+</div>
+{% endif %}
+
+<div class="row g-4">
+  <div class="col-lg-6">
+    <div class="table-card">
+      <div class="tc-header">
+        <span>Pengajuan Terbaru</span>
+        <a href="{% url 'pengajuan_list' %}" style="font-size:0.8rem;color:#888;text-decoration:none;">Lihat Semua →</a>
+      </div>
+      <table class="table mb-0">
+        <thead><tr><th>Nama</th><th>Kamar</th><th>Durasi</th><th>Status</th></tr></thead>
+        <tbody>
+          {% for p in pengajuan_terbaru %}
+          <tr>
+            <td><strong>{{ p.nama }}</strong></td>
+            <td>{{ p.kamar.nomor }}</td>
+            <td>{{ p.durasi }} bln</td>
+            <td>
+              {% if p.status == 'menunggu' %}<span class="b-menunggu">Menunggu</span>
+              {% elif p.status == 'disetujui' %}<span class="b-disetujui">Disetujui</span>
+              {% elif p.status == 'berhasil' %}<span class="b-aktif">Berhasil</span>
+              {% elif p.status == 'ditolak' %}<span class="b-ditolak">Ditolak</span>
+              {% else %}<span class="b-menunggu">{{ p.status }}</span>{% endif %}
+            </td>
+          </tr>
+          {% empty %}
+          <tr><td colspan="4" class="text-center py-4" style="color:#aaa;">Belum ada pengajuan</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div class="col-lg-6">
+    <div class="table-card">
+      <div class="tc-header">
+        <span>Bukti Bayar Menunggu</span>
+        <a href="{% url 'bukti_list' %}" style="font-size:0.8rem;color:#888;text-decoration:none;">Lihat Semua →</a>
+      </div>
+      <table class="table mb-0">
+        <thead><tr><th>Nama</th><th>Kamar</th><th>Total</th><th>Aksi</th></tr></thead>
+        <tbody>
+          {% for b in bukti_terbaru %}
+          <tr>
+            <td><strong>{{ b.pengajuan.nama }}</strong></td>
+            <td>{{ b.pengajuan.kamar.nomor }}</td>
+            <td>Rp {{ b.pengajuan.total_harga|floatformat:0 }}</td>
+            <td>
+              <a href="{% url 'bukti_verifikasi' b.pk %}" class="btn-act btn-approve" onclick="return confirm('Verifikasi bukti ini?')">✅ Verifikasi</a>
+            </td>
+          </tr>
+          {% empty %}
+          <tr><td colspan="4" class="text-center py-4" style="color:#aaa;">Tidak ada yang menunggu</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

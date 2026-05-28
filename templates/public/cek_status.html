@@ -1,0 +1,59 @@
+{% extends 'base_public.html' %}
+{% block title %}Status #{{ pengajuan.pk }} - KostKita{% endblock %}
+{% block extra_css %}
+<style>
+  :root { --dark:#1a1a1a; --cream:#f5f0eb; --accent:#c8a97e; --muted:#6b6b6b; }
+  .page-wrap { max-width:580px; margin:0 auto; padding:2.5rem 1.5rem; }
+  .btn-main { background:var(--dark); color:#fff; border:none; border-radius:14px; padding:0.85rem; font-weight:600; width:100%; font-size:0.95rem; cursor:pointer; text-align:center; text-decoration:none; display:block; }
+  .btn-main:hover { background:#333; color:#fff; }
+  .info-row { display:flex; padding:0.4rem 0; font-size:0.88rem; }
+  .info-label { color:var(--muted); width:45%; }
+</style>
+{% endblock %}
+{% block content %}
+<div class="page-wrap">
+  <a href="{% url 'cek_status_form' %}" class="back-btn mb-4 d-inline-flex">
+    <i class="bi bi-arrow-left"></i> Cek ID Lain
+  </a>
+  <div style="background:#fff;border:1px solid #f0f0f0;border-radius:24px;padding:2rem;box-shadow:0 4px 20px rgba(0,0,0,0.05);">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h5 style="font-weight:800;margin:0;">Status Pengajuan</h5>
+      <span style="background:#f5f5f5;padding:4px 12px;border-radius:50px;font-size:0.8rem;font-weight:600;">#{{ pengajuan.pk }}</span>
+    </div>
+    <div style="background:var(--cream);border-radius:16px;padding:1.2rem 1.5rem;margin-bottom:1.5rem;">
+      <div class="info-row"><span class="info-label">Nama</span><strong>{{ pengajuan.nama }}</strong></div>
+      <div class="info-row"><span class="info-label">Kamar</span><strong>{{ pengajuan.kamar.nomor }}</strong></div>
+      <div class="info-row"><span class="info-label">Durasi</span><strong>{{ pengajuan.durasi }} Bulan</strong></div>
+      <div class="info-row"><span class="info-label">Total Bayar</span><strong>Rp {{ pengajuan.total_harga|floatformat:0 }}</strong></div>
+      {% if pengajuan.tanggal_mulai %}
+      <div class="info-row"><span class="info-label">Mulai</span><strong>{{ pengajuan.tanggal_mulai|date:"d M Y" }}</strong></div>
+      <div class="info-row"><span class="info-label">Selesai</span><strong>{{ pengajuan.tanggal_selesai|date:"d M Y" }}</strong></div>
+      {% endif %}
+    </div>
+    <div class="text-center mb-4">
+        {% if pengajuan.status == 'menunggu' %}
+            <span style="background:#fff3e0;color:#e65100;padding:10px 24px;border-radius:50px;font-weight:600;font-size:0.9rem;">⏳ Menunggu Review Admin</span>
+        {% elif pengajuan.status == 'disetujui' %}
+            <span style="background:#e8f5e9;color:#2e7d32;padding:10px 24px;border-radius:50px;font-weight:600;font-size:0.9rem;">✅ Disetujui — Silakan Bayar</span>
+        {% elif pengajuan.status == 'menunggu_verifikasi' %}
+            <span style="background:#e3f2fd;color:#1565c0;padding:10px 24px;border-radius:50px;font-weight:600;font-size:0.9rem;">🔍 Menunggu Verifikasi</span>
+        {% elif pengajuan.status == 'berhasil' %}
+            <!-- Mengubah 'Selamat Tinggal' menjadi 'Selamat Menghuni' agar lebih ramah -->
+            <span style="background:#e8f5e9;color:#2e7d32;padding:10px 24px;border-radius:50px;font-weight:600;font-size:0.9rem;">🏠 Sewa Aktif — Selamat Menghuni!</span>
+        {% elif pengajuan.status == 'selesai' %}
+            <!-- MENANGGULANGI STATUS SELESAI -->
+            <span style="background:#f5f5f5;color:#6b6b6b;padding:10px 24px;border-radius:50px;font-weight:600;font-size:0.9rem;">🏁 Masa Sewa Telah Selesai</span>
+        {% elif pengajuan.status == 'ditolak' %}
+            <span style="background:#fce4ec;color:#c62828;padding:10px 24px;border-radius:50px;font-weight:600;font-size:0.9rem;">❌ Ditolak</span>
+        {% endif %}
+    </div>
+    {% if pengajuan.status == 'disetujui' %}
+    <div style="background:#e8f5e9;border-radius:14px;padding:1.1rem 1.3rem;margin-bottom:1rem;font-size:0.87rem;color:#2e7d32;">
+      Transfer ke BCA: <strong>1234567890</strong> a/n KostKita<br>
+      Nominal: <strong>Rp {{ pengajuan.total_harga|floatformat:0 }}</strong>
+    </div>
+    <a href="{% url 'upload_bukti' pengajuan.pk %}" class="btn-main">Upload Bukti Bayar</a>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

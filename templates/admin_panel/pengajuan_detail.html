@@ -1,0 +1,66 @@
+{% extends 'admin_panel/base_admin.html' %}
+{% block title %}Detail Pengajuan{% endblock %}
+{% block page_title %}Detail Pengajuan #{{ pengajuan.pk }}{% endblock %}
+{% block content %}
+<div class="row g-4">
+  <div class="col-lg-5">
+    <div style="background:#fff;border-radius:20px;padding:1.8rem;border:1px solid #f0f0f0;margin-bottom:1rem;">
+      <h6 style="font-weight:800;margin-bottom:1.2rem;">Data Penyewa</h6>
+      <table style="width:100%;font-size:0.88rem;">
+        <tr><td style="color:#888;padding:0.35rem 0;width:40%;">Nama</td><td><strong>{{ pengajuan.nama }}</strong></td></tr>
+        <tr><td style="color:#888;padding:0.35rem 0;">Umur</td><td>{{ pengajuan.umur }} tahun</td></tr>
+        <tr><td style="color:#888;padding:0.35rem 0;">Jenis Kelamin</td><td>{{ pengajuan.get_jenis_kelamin_display }}</td></tr>
+        <tr><td style="color:#888;padding:0.35rem 0;">No. HP</td><td>{{ pengajuan.no_hp }}</td></tr>
+        <tr><td style="color:#888;padding:0.35rem 0;">Scan KTP</td>
+          <td><a href="{{ pengajuan.scan_ktp.url }}" target="_blank" style="color:#1a1a1a;font-size:0.82rem;"><i class="bi bi-image"></i> Lihat KTP</a></td>
+        </tr>
+      </table>
+    </div>
+    <div style="background:#fff;border-radius:20px;padding:1.8rem;border:1px solid #f0f0f0;">
+      <h6 style="font-weight:800;margin-bottom:1.2rem;">Info Sewa</h6>
+      <table style="width:100%;font-size:0.88rem;">
+        <tr><td style="color:#888;padding:0.35rem 0;width:40%;">Kamar</td><td><strong>{{ pengajuan.kamar.nomor }}</strong> (Lantai {{ pengajuan.kamar.lantai }})</td></tr>
+        <tr><td style="color:#888;padding:0.35rem 0;">Durasi</td><td><strong>{{ pengajuan.durasi }} Bulan</strong></td></tr>
+        <tr><td style="color:#888;padding:0.35rem 0;">Total</td><td><strong>Rp {{ pengajuan.total_harga|floatformat:0 }}</strong></td></tr>
+        <tr><td style="color:#888;padding:0.35rem 0;">Tgl Ajuan</td><td>{{ pengajuan.tanggal_ajuan|date:"d M Y H:i" }}</td></tr>
+        {% if pengajuan.tanggal_mulai %}
+        <tr><td style="color:#888;padding:0.35rem 0;">Mulai</td><td>{{ pengajuan.tanggal_mulai|date:"d M Y" }}</td></tr>
+        <tr><td style="color:#888;padding:0.35rem 0;">Selesai</td><td>{{ pengajuan.tanggal_selesai|date:"d M Y" }}</td></tr>
+        {% endif %}
+        <tr><td style="color:#888;padding:0.35rem 0;">Status</td><td>
+          {% if pengajuan.status == 'menunggu' %}<span class="b-menunggu">Menunggu</span>
+          {% elif pengajuan.status == 'disetujui' %}<span class="b-disetujui">Disetujui</span>
+          {% elif pengajuan.status == 'berhasil' %}<span class="b-verified">Berhasil</span>
+          {% elif pengajuan.status == 'selesai' %}<span class="b-menunggu">Selesai</span>
+          {% elif pengajuan.status == 'ditolak' %}<span class="b-ditolak">Ditolak</span>
+          {% else %}<span class="b-menunggu">{{ pengajuan.status }}</span>{% endif %}
+        </td></tr>
+      </table>
+    </div>
+  </div>
+  <div class="col-lg-7">
+    {% if bukti %}
+    <div style="background:#fff;border-radius:20px;padding:1.8rem;border:1px solid #f0f0f0;margin-bottom:1rem;">
+      <h6 style="font-weight:800;margin-bottom:1.2rem;">Bukti Pembayaran</h6>
+      <img src="{{ bukti.foto_bukti.url }}" style="width:100%;border-radius:14px;margin-bottom:1rem;">
+      {% if bukti.catatan %}<p style="font-size:0.85rem;color:#888;">Catatan: {{ bukti.catatan }}</p>{% endif %}
+      {% if bukti.status == 'menunggu' %}
+      <div class="d-flex gap-2">
+        <a href="{% url 'bukti_verifikasi' bukti.pk %}" class="btn flex-fill" style="background:#1a1a1a;color:#fff;border-radius:12px;" onclick="return confirm('Verifikasi pembayaran ini?')">✅ Verifikasi</a>
+        <a href="{% url 'bukti_tolak' bukti.pk %}" class="btn flex-fill" style="background:#fce4ec;color:#c62828;border-radius:12px;" onclick="return confirm('Tolak bukti ini?')">❌ Tolak</a>
+      </div>
+      {% endif %}
+    </div>
+    {% endif %}
+    {% if pengajuan.status == 'menunggu' %}
+    <div class="d-flex gap-2">
+      <a href="{% url 'pengajuan_setujui' pengajuan.pk %}" class="btn flex-fill" style="background:#1a1a1a;color:#fff;border-radius:12px;" onclick="return confirm('Setujui pengajuan ini?')">✅ Setujui Pengajuan</a>
+      <a href="{% url 'pengajuan_tolak' pengajuan.pk %}" class="btn flex-fill" style="background:#fce4ec;color:#c62828;border-radius:12px;" onclick="return confirm('Tolak pengajuan ini?')">❌ Tolak</a>
+    </div>
+    {% endif %}
+  </div>
+</div>
+<div class="mt-3">
+  <a href="{% url 'pengajuan_list' %}" style="color:#888;text-decoration:none;font-size:0.85rem;">← Kembali ke daftar</a>
+</div>
+{% endblock %}

@@ -1,0 +1,234 @@
+{% extends 'base_public.html' %}
+{% block title %}KostKita - Hunian Nyaman & Modern{% endblock %}
+{% block extra_css %}
+<style>
+  :root { --dark:#1a1a1a; --cream:#f5f0eb; --accent:#c8a97e; --muted:#6b6b6b; }
+  section { scroll-margin-top:80px; }
+  .navbar-custom { background:rgba(255,255,255,0.92); backdrop-filter:blur(10px); border-bottom:1px solid #f1f1f1; padding:1rem 0; }
+  .navbar-brand { font-weight:800; font-size:1.35rem; color:var(--dark) !important; }
+  .nav-link { color:var(--muted) !important; font-size:0.92rem; font-weight:500; position:relative; transition:0.2s; }
+  .nav-link:hover { color:var(--dark) !important; }
+  .nav-link::after { content:''; position:absolute; left:0; bottom:-4px; width:0; height:2px; background:var(--dark); transition:0.25s; }
+  .nav-link:hover::after { width:100%; }
+  .section-padding { padding:7rem 0; }
+  .section-title { font-size:2.5rem; font-weight:800; margin-bottom:1rem; }
+  .section-subtitle { color:var(--muted); max-width:650px; margin:auto; line-height:1.8; }
+  .btn-main { background:var(--dark); color:#fff; border-radius:14px; padding:0.9rem 1.8rem; text-decoration:none; display:inline-block; font-weight:500; transition:0.2s; }
+  .btn-main:hover { background:#333; color:#fff; }
+  .btn-secondary-custom { border:1.5px solid var(--dark); color:var(--dark); border-radius:14px; padding:0.9rem 1.8rem; text-decoration:none; display:inline-block; font-weight:500; transition:0.2s; }
+  .btn-secondary-custom:hover { background:var(--dark); color:#fff; }
+  .custom-card { background:#fff; border:1px solid #f1f1f1; border-radius:24px; padding:2rem; transition:0.25s; height:100%; }
+  .custom-card:hover { transform:translateY(-6px); box-shadow:0 10px 30px rgba(0,0,0,0.05); }
+  .room-card { border:1px solid #f0f0f0; border-radius:24px; overflow:hidden; transition:0.25s; background:#fff; height:100%; }
+  .room-card:hover { transform:translateY(-6px); box-shadow:0 10px 30px rgba(0,0,0,0.05); }
+  .room-image { height:240px; background:var(--cream); display:flex; align-items:center; justify-content:center; overflow:hidden; }
+  .room-image img { width:100%; height:100%; object-fit:cover; }
+  .status-badge { background:#eef7ee; color:#2e7d32; padding:5px 12px; border-radius:50px; font-size:0.75rem; font-weight:600; }
+  .contact-box { background:var(--cream); border-radius:24px; padding:3rem; }
+</style>
+{% endblock %}
+{% block content %}
+
+<!-- NAVBAR -->
+<nav class="navbar navbar-expand-lg navbar-custom sticky-top">
+  <div class="container">
+    <a class="navbar-brand" href="#beranda">🏠 KostKita</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navmenu">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navmenu">
+      <ul class="navbar-nav mx-auto gap-lg-4">
+        <li class="nav-item"><a class="nav-link" href="#beranda">Beranda</a></li>
+        <li class="nav-item"><a class="nav-link" href="#tentang">Tentang</a></li>
+        <li class="nav-item"><a class="nav-link" href="#kamar">Kamar</a></li>
+        <li class="nav-item"><a class="nav-link" href="#kontak">Kontak</a></li>
+      </ul>
+      <a href="{% url 'admin_login' %}" class="btn-main">Login Admin</a>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section id="beranda" class="section-padding">
+  <div class="container">
+    <div class="row align-items-center g-5">
+      <div class="col-lg-6">
+        <p style="letter-spacing:2px;font-size:0.8rem;color:var(--muted);text-transform:uppercase;">Kost Eksklusif Banda Aceh</p>
+        <h1 style="font-size:4rem;font-weight:800;line-height:1.1;">Hunian Nyaman <span style="color:var(--accent);">dan Modern</span></h1>
+        <p class="mt-4" style="color:var(--muted);line-height:1.9;font-size:1rem;">Kost nyaman di kawasan Lamgugob, Banda Aceh dengan fasilitas lengkap, lingkungan aman, dan akses strategis dekat kampus.</p>
+        <div class="d-flex gap-3 mt-4 flex-wrap">
+          <a href="#kamar" class="btn-main">Lihat Kamar</a>
+          <a href="{% url 'cek_status_form' %}" class="btn-secondary-custom">Cek Status</a>
+        </div>
+        <div class="d-flex gap-5 mt-5 flex-wrap">
+          <div><h2 style="font-weight:800;margin:0;">{{ kamar_tersedia }}</h2><small style="color:var(--muted);">Kamar Tersedia</small></div>
+          <div><h2 style="font-weight:800;margin:0;">{{ kamar_terisi }}</h2><small style="color:var(--muted);">Sudah Dihuni</small></div>
+          <div><h2 style="font-weight:800;margin:0;">10</h2><small style="color:var(--muted);">Total Kamar</small></div>
+        </div>
+      </div>
+      <div class="col-lg-6">
+        <div style="height:500px;border-radius:32px;background:var(--cream);overflow:hidden;">
+          <img src="https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?q=80&w=1200&auto=format&fit=crop" style="width:100%;height:100%;object-fit:cover;">
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TENTANG -->
+<section id="tentang" style="background:var(--cream);padding:8rem 0;">
+  <div class="container">
+    <div class="text-center mb-5">
+      <h2 class="section-title">Tentang KostKita</h2>
+      <p class="section-subtitle">KostKita merupakan hunian nyaman di kawasan Lamgugob, Banda Aceh. Cocok untuk mahasiswa maupun pekerja dengan fasilitas lengkap, lingkungan aman, dan akses strategis dekat kampus.</p>
+    </div>
+    <div class="row g-4">
+      <div class="col-md-4">
+        <div class="custom-card text-center">
+          <div style="font-size:2.3rem;">❄️</div>
+          <h5 class="mt-3 fw-bold">AC & WiFi</h5>
+          <p style="color:var(--muted);line-height:1.8;">Koneksi internet stabil dan kamar nyaman ber-AC untuk aktivitas sehari-hari.</p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="custom-card text-center">
+          <div style="font-size:2.3rem;">🛏️</div>
+          <h5 class="mt-3 fw-bold">Full Furnitur</h5>
+          <p style="color:var(--muted);line-height:1.8;">Tempat tidur, lemari, meja belajar, dan fasilitas lengkap siap pakai.</p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="custom-card text-center">
+          <div style="font-size:2.3rem;">📍</div>
+          <h5 class="mt-3 fw-bold">Lokasi Strategis</h5>
+          <p style="color:var(--muted);line-height:1.8;">Berlokasi di Lamgugob, Banda Aceh dan dekat dengan berbagai fasilitas umum.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CARA SEWA -->
+<section class="section-padding">
+  <div class="container">
+    <div class="text-center mb-5">
+      <p style="letter-spacing:2px;font-size:0.8rem;color:var(--muted);text-transform:uppercase;">Mudah & Transparan</p>
+      <h2 class="section-title">Cara Sewa Kamar</h2>
+    </div>
+    <div class="row g-4 text-center">
+      <div class="col-md-3">
+        <div style="width:52px;height:52px;background:var(--dark);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:1.1rem;margin:0 auto 1rem;">1</div>
+        <h6 style="font-weight:700;">Pilih Kamar</h6>
+        <p style="color:var(--muted);font-size:0.88rem;">Browse dan pilih kamar yang tersedia sesuai kebutuhanmu.</p>
+      </div>
+      <div class="col-md-3">
+        <div style="width:52px;height:52px;background:var(--dark);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:1.1rem;margin:0 auto 1rem;">2</div>
+        <h6 style="font-weight:700;">Ajukan Sewa</h6>
+        <p style="color:var(--muted);font-size:0.88rem;">Isi data diri, pilih durasi sewa, dan upload scan KTP.</p>
+      </div>
+      <div class="col-md-3">
+        <div style="width:52px;height:52px;background:var(--dark);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:1.1rem;margin:0 auto 1rem;">3</div>
+        <h6 style="font-weight:700;">Bayar & Upload</h6>
+        <p style="color:var(--muted);font-size:0.88rem;">Setelah disetujui admin, transfer dan upload bukti pembayaran.</p>
+      </div>
+      <div class="col-md-3">
+        <div style="width:52px;height:52px;background:var(--accent);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:1.1rem;margin:0 auto 1rem;">4</div>
+        <h6 style="font-weight:700;">Resmi Menghuni</h6>
+        <p style="color:var(--muted);font-size:0.88rem;">Admin verifikasi, kamar siap ditempati sesuai durasi sewa.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- KAMAR -->
+<section id="kamar" class="section-padding">
+  <div class="container">
+    <div class="d-flex justify-content-between align-items-end mb-5 flex-wrap gap-3">
+      <div>
+        <p style="letter-spacing:2px;font-size:0.8rem;color:var(--muted);text-transform:uppercase;margin-bottom:0.5rem;">Tersedia Sekarang</p>
+        <h2 class="section-title mb-0">Kamar Pilihan</h2>
+      </div>
+      <a href="{% url 'daftar_kamar' %}" class="btn-secondary-custom">Lihat Semua</a>
+    </div>
+    <div class="row g-4">
+      {% for k in kamar_unggulan %}
+      <div class="col-md-4">
+        <div class="room-card">
+          <div class="room-image">
+            {% if k.foto %}<img src="{{ k.foto.url }}">
+            {% else %}<span style="font-size:3rem;">🛏️</span>{% endif %}
+          </div>
+          <div style="padding:1.5rem;">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <h5 class="fw-bold mb-0">Kamar {{ k.nomor }}</h5>
+                {% if k.status == 'tersedia' %}
+                  <span class="status-badge" style="background:#eef7ee; color:#2e7d32;">Tersedia</span>
+                {% else %}
+                  <span class="status-badge" style="background:#fce4ec; color:#c62828;">Terisi</span>
+                {% endif %}
+            </div>
+            <p style="color:var(--muted);font-size:0.9rem;">Lantai {{ k.lantai }}</p>
+            <h4 style="font-weight:800;margin:1rem 0;">Rp 1.000.000<small style="font-size:0.8rem;color:var(--muted);font-weight:400;">/bulan</small></h4>
+            <a href="{% url 'detail_kamar' k.pk %}" class="btn-main w-100 text-center">Lihat Detail</a>
+          </div>
+        </div>
+      </div>
+      {% empty %}
+      <div class="col-12 text-center"><p style="color:var(--muted);">Semua kamar sedang terisi.</p></div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- KONTAK -->
+<section id="kontak" class="section-padding">
+  <div class="container">
+    <div class="contact-box">
+      <div class="row align-items-center g-5">
+        <div class="col-lg-6">
+          <h2 class="section-title">Hubungi Kami</h2>
+          <p style="color:var(--muted);line-height:1.9;">Jika ada pertanyaan mengenai kamar, fasilitas, maupun proses penyewaan, silakan hubungi kami.</p>
+        </div>
+        <div class="col-lg-6">
+          <div class="d-flex flex-column gap-3">
+            <div><small style="color:var(--muted);">Alamat</small><h5 class="fw-bold">Lamgugob, Banda Aceh</h5></div>
+            <div><small style="color:var(--muted);">WhatsApp</small><h5 class="fw-bold">+62 812-3456-7890</h5></div>
+            <div><small style="color:var(--muted);">Email</small><h5 class="fw-bold">kostkita@gmail.com</h5></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer style="background:var(--dark);color:#888;padding:3rem 0;">
+  <div class="container">
+    <div class="row g-4">
+      <div class="col-md-4">
+        <h5 style="color:#fff;font-weight:800;margin-bottom:0.8rem;">🏠 KostKita</h5>
+        <p style="font-size:0.88rem;">Hunian nyaman, bersih, dan terjangkau di Lamgugob, Banda Aceh.</p>
+      </div>
+      <div class="col-md-4">
+        <h6 style="color:#fff;font-weight:700;margin-bottom:1rem;">Navigasi</h6>
+        <div class="d-flex flex-column gap-1" style="font-size:0.88rem;">
+          <a href="#beranda" style="color:#888;text-decoration:none;">Beranda</a>
+          <a href="#tentang" style="color:#888;text-decoration:none;">Tentang</a>
+          <a href="#kamar" style="color:#888;text-decoration:none;">Kamar</a>
+          <a href="#kontak" style="color:#888;text-decoration:none;">Kontak</a>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <h6 style="color:#fff;font-weight:700;margin-bottom:1rem;">Kontak</h6>
+        <p style="font-size:0.88rem;">📍 Lamgugob, Banda Aceh</p>
+        <p style="font-size:0.88rem;">📱 +62 812-3456-7890</p>
+        <p style="font-size:0.88rem;">✉️ kostkita@gmail.com</p>
+      </div>
+    </div>
+    <div style="border-top:1px solid #2a2a2a;margin-top:2rem;padding-top:1.5rem;text-align:center;font-size:0.82rem;">
+      © 2026 KostKita. All rights reserved.
+    </div>
+  </div>
+</footer>
+
+{% endblock %}
