@@ -290,3 +290,155 @@ def penyewa_list(request):
         'penyewa': penyewa,
         'riwayat': riwayat,
     })
+
+
+# ─── REST API ────────────────────────────────────────────────
+
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from rest_framework import status
+from .serializers import KamarSerializer, PengajuanSerializer, BuktiBayarSerializer
+
+# KAMAR
+@api_view(['GET', 'POST'])
+def api_kamar_list(request):
+    if request.method == 'GET':
+        kamar = Kamar.objects.all()
+        serializer = KamarSerializer(kamar, many=True)
+        return Response(serializer.data)
+
+    elif request.method == 'POST':
+        serializer = KamarSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['GET', 'PUT', 'DELETE'])
+def api_kamar_detail(request, pk):
+    try:
+        kamar = Kamar.objects.get(pk=pk)
+    except Kamar.DoesNotExist:
+        return Response({'error': 'Kamar tidak ditemukan'}, status=status.HTTP_404_NOT_FOUND)
+
+    if request.method == 'GET':
+        serializer = KamarSerializer(kamar)
+        return Response(serializer.data)
+
+    elif request.method == 'PUT':
+        serializer = KamarSerializer(kamar, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    elif request.method == 'DELETE':
+        kamar.delete()
+        return Response({'message': 'Kamar berhasil dihapus'}, status=status.HTTP_200_OK)
+
+# PENGAJUAN
+@api_view(['GET', 'POST'])
+def api_pengajuan_list(request):
+    if request.method == 'GET':
+        pengajuan = Pengajuan.objects.all()
+        serializer = PengajuanSerializer(pengajuan, many=True)
+        return Response(serializer.data)
+
+    elif request.method == 'POST':
+        serializer = PengajuanSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['GET', 'PUT', 'DELETE'])
+def api_pengajuan_detail(request, pk):
+    try:
+        pengajuan = Pengajuan.objects.get(pk=pk)
+    except Pengajuan.DoesNotExist:
+        return Response({'error': 'Pengajuan tidak ditemukan'}, status=status.HTTP_404_NOT_FOUND)
+
+    if request.method == 'GET':
+        serializer = PengajuanSerializer(pengajuan)
+        return Response(serializer.data)
+
+    elif request.method == 'PUT':
+        serializer = PengajuanSerializer(pengajuan, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    elif request.method == 'DELETE':
+        pengajuan.delete()
+        return Response({'message': 'Pengajuan berhasil dihapus'}, status=status.HTTP_200_OK)
+
+# BUKTI BAYAR
+@api_view(['GET', 'POST'])
+def api_bukti_list(request):
+    if request.method == 'GET':
+        bukti = BuktiBayar.objects.all()
+        serializer = BuktiBayarSerializer(bukti, many=True)
+        return Response(serializer.data)
+
+    elif request.method == 'POST':
+        serializer = BuktiBayarSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+
+@api_view(['GET', 'PUT', 'DELETE'])
+def api_bukti_detail(request, pk):
+    try:
+        bukti = BuktiBayar.objects.get(pk=pk)
+    except BuktiBayar.DoesNotExist:
+        return Response({'error': 'Bukti tidak ditemukan'}, status=status.HTTP_404_NOT_FOUND)
+
+    if request.method == 'GET':
+        serializer = BuktiBayarSerializer(bukti)
+        return Response(serializer.data)
+
+    elif request.method == 'PUT':
+        serializer = BuktiBayarSerializer(bukti, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    elif request.method == 'DELETE':
+        bukti.delete()
+        return Response({'message': 'Bukti bayar berhasil dihapus'}, status=status.HTTP_200_OK)
+    
+
+@api_view(['GET'])
+def api_statistik(request):
+    total_pemasukan = sum(p.total_harga for p in Pengajuan.objects.filter(status='berhasil'))
+    data = {
+        'total_kamar': Kamar.objects.count(),
+        'kamar_tersedia': Kamar.objects.filter(status='tersedia').count(),
+        'kamar_terisi': Kamar.objects.filter(status='terisi').count(),
+        'penyewa_aktif': Pengajuan.objects.filter(status='berhasil').count(),
+        'pengajuan_menunggu': Pengajuan.objects.filter(status='menunggu').count(),
+        'total_pemasukan': total_pemasukan,
+    }
+    return Response(data)
+
+@api_view(['GET'])
+def api_kamar_filter(request):
+    status_filter = request.GET.get('status', '')
+    kamar = Kamar.objects.all()
+    if status_filter:
+        kamar = kamar.filter(status=status_filter)
+    serializer = KamarSerializer(kamar, many=True)
+    return Response({'count': kamar.count(), 'results': serializer.data})
+
+@api_view(['GET'])
+def api_pengajuan_filter(request):
+    status_filter = request.GET.get('status', '')
+    pengajuan = Pengajuan.objects.all().order_by('-tanggal_ajuan')
+    if status_filter:
+        pengajuan = pengajuan.filter(status=status_filter)
+    serializer = PengajuanSerializer(pengajuan, many=True)
+    return Response({'count': pengajuan.count(), 'results': serializer.data})

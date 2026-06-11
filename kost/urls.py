@@ -38,4 +38,17 @@ urlpatterns = [
 
     # Penyewa
     path('admin-panel/penyewa/', views.penyewa_list, name='penyewa_list'),
+
+    # API Endpoints
+    path('api/kamar/', views.api_kamar_list, name='api_kamar_list'),
+    path('api/kamar/<int:pk>/', views.api_kamar_detail, name='api_kamar_detail'),
+    path('api/pengajuan/', views.api_pengajuan_list, name='api_pengajuan_list'),
+    path('api/pengajuan/<int:pk>/', views.api_pengajuan_detail, name='api_pengajuan_detail'),
+    path('api/bukti/', views.api_bukti_list, name='api_bukti_list'),
+    path('api/bukti/<int:pk>/', views.api_bukti_detail, name='api_bukti_detail'),
+
+    path('api/statistik/', views.api_statistik, name='api_statistik'),
+    path('api/kamar/filter/', views.api_kamar_filter, name='api_kamar_filter'),
+    path('api/pengajuan/filter/', views.api_pengajuan_filter, name='api_pengajuan_filter'),
 ]
+
